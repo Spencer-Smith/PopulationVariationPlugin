@@ -1,0 +1,62 @@
+﻿<Window x:Class="PvmrmViewer.Views.PvmrmView"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+		xmlns:vm="clr-namespace:PvmrmViewer.ViewModels"
+        Title="Population Variation" Height="400" Width="600">
+	<Window.DataContext>
+		<vm:PvmrmViewViewModel/>
+	</Window.DataContext>
+	
+    <Grid>
+		<DockPanel>
+        <Menu VerticalAlignment="Top" Height="22" DockPanel.Dock="Top">
+			<MenuItem Header="_File">
+				<MenuItem Header="_Save" Click="SaveClick"/>
+				<MenuItem Header="_Exit" Click="ExitClick"/>
+			</MenuItem>
+			<MenuItem Header="_Help">
+				<MenuItem Header="_FAQ" Click="FaqClick"/>
+				<MenuItem Header="_Contact" Click="ContactClick"/>
+			</MenuItem>
+			<MenuItem Header="_About" Click="AboutClick"/>
+		</Menu>
+            <DataGrid Width="Auto" Height="Auto" ItemsSource="{Binding Entries}"
+                      VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto" AutoGenerateColumns="False" DockPanel.Dock="Top">
+                <DataGrid.Columns>
+                    <DataGridTextColumn Binding="{Binding Path=ProteinAccession}"
+                                        IsReadOnly="True" Header="Protein Accession" Width="Auto"/>
+                    <DataGridTextColumn Binding="{Binding Path=ProteinName}"
+                                        IsReadOnly="True" Header="Protein Name" Width="Auto"/>
+                    <DataGridTextColumn Binding="{Binding Path=VariantCodex}"
+                                        IsReadOnly="True" Header="Variant Codex" Width="Auto"/>
+                    <DataGridTextColumn Binding="{Binding Path=MinorAlleleFrequency}"
+                                        IsReadOnly="True" Header="Minor Allele Frequency" Width="Auto"/>
+                    <DataGridTextColumn Binding="{Binding Path=Variance}"
+                                        IsReadOnly="True" Header="Variance" Width="Auto"/>
+                    <DataGridTextColumn Binding="{Binding Path=ReferencePeptide}"
+                                        IsReadOnly="True" Header="Reference Peptide" Width="Auto"/>
+                    <DataGridTextColumn Binding="{Binding Path=ModifiedPeptide}"
+                                        IsReadOnly="True" Header="Modified Peptide" Width="Auto"/>
+                    <DataGridTextColumn Binding="{Binding Path=EASmaf}"
+                                        IsReadOnly="True" Header="East Asian MAF" Width="Auto"/>
+                    <DataGridTextColumn Binding="{Binding Path=EURmaf}"
+                                        IsReadOnly="True" Header="European MAF" Width="Auto"/>
+                    <DataGridTextColumn Binding="{Binding Path=AFRmaf}"
+                                        IsReadOnly="True" Header="African MAF" Width="Auto"/>
+                    <DataGridTextColumn Binding="{Binding Path=AMRmaf}"
+                                        IsReadOnly="True" Header="American MAF" Width="Auto"/>
+                    <DataGridTextColumn Binding="{Binding Path=SASmaf}"
+                                        IsReadOnly="True" Header="South Asian MAF" Width="Auto"/>
+                    <DataGridHyperlinkColumn Binding="{Binding Path=SnpUri}" ContentBinding="{Binding Path=SnpId}"
+                                             IsReadOnly="True" Header="SNP ID" Width="Auto">
+                        <DataGridHyperlinkColumn.ElementStyle>
+                            <Style TargetType="TextBlock">
+                                <EventSetter Event="Hyperlink.Click" Handler="OnHyperlinkClick" />
+                            </Style>
+                        </DataGridHyperlinkColumn.ElementStyle>
+                    </DataGridHyperlinkColumn>
+                </DataGrid.Columns>
+            </DataGrid>
+		</DockPanel>
+	</Grid>
+</Window>

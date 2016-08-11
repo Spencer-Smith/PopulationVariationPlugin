@@ -1,0 +1,12 @@
+﻿<Window x:Class="PvmrmViewer.Views.ContactView"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="Contact" Height="100" Width="250" Background="LightGray" ResizeMode="NoResize">
+    <Grid>
+        <TextBlock FontWeight="Bold">
+			<LineBreak/>
+			Email questions and suggestions to: <LineBreak/>
+			<Hyperlink NavigateUri="mailto:Samuel.Payne@pnnl.gov" RequestNavigate="HyperlinkRequestNavigate">Samuel.Payne@pnnl.gov</Hyperlink>
+		</TextBlock>
+    </Grid>
+</Window>

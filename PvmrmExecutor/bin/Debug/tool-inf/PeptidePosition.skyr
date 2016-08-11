@@ -1,0 +1,10 @@
+<?xml version="1.0"?>
+<views>
+  <view name="Peptide Position" rowsource="pwiz.Skyline.Model.Databinding.Entities.Peptide" sublist="Results!*">
+    <column name="Protein.Name" />
+    <column name="Sequence" />
+    <column name="Protein.Description" />
+    <column name="BeginPos" />
+    <column name="EndPos" />
+  </view>
+</views>

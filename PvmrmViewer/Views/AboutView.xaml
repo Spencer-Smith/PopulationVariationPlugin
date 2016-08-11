@@ -1,0 +1,16 @@
+﻿<Window x:Class="PvmrmViewer.Views.AboutView"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="About" Height="150" Width="450" Background="LightGray" ResizeMode="NoResize">
+    <Grid>
+        <TextBlock Width="Auto" FontWeight="Bold">
+			Population Variation v 1.3 <LineBreak/>
+			2013, Grant Fujimoto, Matthew E Monroe, Larissa Rodriguez, Samuel H Payne <LineBreak/>
+			Pacific Northwest National Laboratory <LineBreak/>
+			Richland, WA <LineBreak/>
+			<LineBreak/>
+			<Hyperlink NavigateUri="http://omics.pnl.gov/software/PopulationVariation.php" RequestNavigate="HyperlinkRequestNavigate">http://omics.pnl.gov/software/PopulationVariation.php</Hyperlink>
+
+		</TextBlock>
+    </Grid>
+</Window>

@@ -1,0 +1,44 @@
+﻿<Window x:Class="PvmrmViewer.Views.FaqView"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="F.A.Q." Height="500" Width="660" Background="LightGray" ResizeMode="NoResize">
+    <Grid>
+        <TextBlock>
+			<Bold>1. Where can I get accessions for my fasta files?<LineBreak/></Bold>
+		    Accepted accessions are <Hyperlink NavigateUri="ftp://ftp.ncbi.nlm.nih.gov/genomes/H_sapiens/protein/protein.fa.gz" RequestNavigate="HyperlinkRequestNavigate">NCBI RefSeq</Hyperlink>
+            or <Hyperlink NavigateUri="ftp://ftp.uniprot.org/pub/databases/uniprot/current_release/knowledgebase/proteomes/HUMAN.fasta.gz" RequestNavigate="HyperlinkRequestNavigate">UniProt</Hyperlink>.<LineBreak/>
+			<LineBreak/>
+			<Bold>2. What is the source data used for SNP variants?</Bold><LineBreak/>
+			Data was submitted to dbSNP from the 1000 Genome project. <LineBreak/>
+			<LineBreak/>
+			<Bold>3. What types of mutations are reported?</Bold> <LineBreak/>
+			Only SNPs which affect the peptide sequence are reported: missense, stop-gain, stop-loss, frameshift and in-dels.<LineBreak/>
+			<LineBreak/>
+			<Bold>4. I get an error message “Unable to process accession” or "Accession not found in fasta". What does that mean?</Bold> <LineBreak/>
+			The Population Variation tool searches for SNPs in dbSNP via the protein accession. Therefore, if the protein name listed<LineBreak/>
+			in Skyline is not properly formatted, the tool will not be able to index the database. We strongly encourage users to create<LineBreak/>
+			proteins within Skyline using properly formatted fasta files (either under File->Import->FASTA, or Edit->Insert->FASTA). <LineBreak/>
+			If using these options and the NCBI or Uniprot derived fasta files, the accessions will be in the proper format (See FAQ #1).<LineBreak/>
+			An alternative is to simply list the accession at the beginning of the protein name in Skyline.<LineBreak/>
+			<LineBreak/>
+			<Bold>5. Why do I get several Accessions for the same SNP?</Bold><LineBreak/>
+			The Population Variation tool searches for SNPs in dbSNP via the protein accession. dbSNP natively uses the RefSeq<LineBreak/>
+			accession set from NCBI. If the protein name given from Skyline uses Uniprot accessions, the program must convert those<LineBreak/>
+			to NCBI. Conversions are taken from <Hyperlink NavigateUri="ftp://ftp.uniprot.org/pub/databases/uniprot/current_release/knowledgebase/idmapping/" RequestNavigate="HyperlinkRequestNavigate">Uniprot’s website</Hyperlink>.<LineBreak/>
+			Note that Uniprot and NCBI do not always have a strict one-to-one mapping, especially in the case of alternative isoforms<LineBreak/>
+			at a single genetic locus. See http://www.uniprot.org/uniprot/P47710 for an example.<LineBreak/>
+			<LineBreak/>
+            <Bold>6. What groups make up the reported populations? How were they selected?</Bold> <LineBreak/>
+            Information about populations in the 1000 Genome study can be found on the
+            <Hyperlink NavigateUri="http://www.1000genomes.org/category/population" RequestNavigate="HyperlinkRequestNavigate">1000 Genome Website</Hyperlink>.<LineBreak/>
+            Further information about the project can be found on their
+            <Hyperlink NavigateUri="http://www.1000genomes.org/about" RequestNavigate="HyperlinkRequestNavigate">about</Hyperlink> and
+            <Hyperlink NavigateUri="http://www.1000genomes.org/faq" RequestNavigate="HyperlinkRequestNavigate">FAQ</Hyperlink> pages.<LineBreak/>
+            <LineBreak/>
+			<Bold>7. Can I get a walkthrough, please?</Bold><LineBreak/>
+			Tutorials are available on the 
+			<Hyperlink NavigateUri="https://skyline.gs.washington.edu/labkey/announcements/home/software/Skyline/tools/download.view?entityId=d777d8b4-295b-1031-9193-5d0a05bcd625&amp;name=Population%20Variation%20Tutorial.pdf" RequestNavigate="HyperlinkRequestNavigate">Skyline Website</Hyperlink>
+			or at the <Hyperlink NavigateUri="http://omics.pnl.gov/software/PopulationVariation.php" RequestNavigate="HyperlinkRequestNavigate">PNNL website</Hyperlink>.
+		</TextBlock>
+    </Grid>
+</Window>
