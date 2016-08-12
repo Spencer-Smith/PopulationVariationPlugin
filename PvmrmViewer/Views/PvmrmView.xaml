@@ -28,9 +28,9 @@
                     <DataGridTextColumn Binding="{Binding Path=ProteinName}"
                                         IsReadOnly="True" Header="Protein Name" Width="Auto"/>
                     <DataGridTextColumn Binding="{Binding Path=VariantCodex}"
-                                        IsReadOnly="True" Header="Variant Codex" Width="Auto"/>
+                                        IsReadOnly="True" Header="Variant" Width="Auto"/>
                     <DataGridTextColumn Binding="{Binding Path=MinorAlleleFrequency}"
-                                        IsReadOnly="True" Header="Minor Allele Frequency" Width="Auto"/>
+                                        IsReadOnly="True" Header="MAF" Width="Auto"/>
                     <DataGridTextColumn Binding="{Binding Path=Variance}"
                                         IsReadOnly="True" Header="Variance" Width="Auto"/>
                     <DataGridTextColumn Binding="{Binding Path=ReferencePeptide}"
@@ -38,15 +38,15 @@
                     <DataGridTextColumn Binding="{Binding Path=ModifiedPeptide}"
                                         IsReadOnly="True" Header="Modified Peptide" Width="Auto"/>
                     <DataGridTextColumn Binding="{Binding Path=EASmaf}"
-                                        IsReadOnly="True" Header="East Asian MAF" Width="Auto"/>
+                                        IsReadOnly="True" Header="East Asian" Width="Auto"/>
                     <DataGridTextColumn Binding="{Binding Path=EURmaf}"
-                                        IsReadOnly="True" Header="European MAF" Width="Auto"/>
+                                        IsReadOnly="True" Header="European" Width="Auto"/>
                     <DataGridTextColumn Binding="{Binding Path=AFRmaf}"
-                                        IsReadOnly="True" Header="African MAF" Width="Auto"/>
+                                        IsReadOnly="True" Header="African" Width="Auto"/>
                     <DataGridTextColumn Binding="{Binding Path=AMRmaf}"
-                                        IsReadOnly="True" Header="American MAF" Width="Auto"/>
+                                        IsReadOnly="True" Header="American" Width="Auto"/>
                     <DataGridTextColumn Binding="{Binding Path=SASmaf}"
-                                        IsReadOnly="True" Header="South Asian MAF" Width="Auto"/>
+                                        IsReadOnly="True" Header="South Asian" Width="Auto"/>
                     <DataGridHyperlinkColumn Binding="{Binding Path=SnpUri}" ContentBinding="{Binding Path=SnpId}"
                                              IsReadOnly="True" Header="SNP ID" Width="Auto">
                         <DataGridHyperlinkColumn.ElementStyle>

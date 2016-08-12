@@ -1,8 +1,10 @@
-﻿namespace PVMRM
+﻿using System;
+using System.Data;
+
+namespace PVMRM
 {
     public class Snp
     {
-        // Auto-properties
         public int SnpID { get; set; }
         public int aa_position { get; set; }
         public string NewResidue { get; set; }
@@ -15,6 +17,28 @@
         public double sasMAF { get; set; }
         public string ModifiedPeptideString { get; set; }
         public string Codex { get; set; }
+
+        /// <summary>
+        /// Loads data from a query-returned row
+        /// </summary>
+        /// <param name="row"></param>
+        public void LoadData(DataRow row)
+        {
+            NewResidue = SNPDatabase.DbCStr(row["residue"]);
+            aa_position = SNPDatabase.DbCInt(row["aa_pos"]);
+            MinorAlleleFrequency = SNPDatabase.DbCDouble(row["freq"]);
+            easMAF = SNPDatabase.DbCDouble(row["eas"]);
+            eurMAF = SNPDatabase.DbCDouble(row["eur"]);
+            afrMAF = SNPDatabase.DbCDouble(row["afr"]);
+            amrMAF = SNPDatabase.DbCDouble(row["amr"]);
+            sasMAF = SNPDatabase.DbCDouble(row["sas"]);
+            double high = Math.Max(easMAF, Math.Max(eurMAF, Math.Max(afrMAF,
+                Math.Max(amrMAF, sasMAF))));
+            double low = Math.Min(easMAF, Math.Min(eurMAF, Math.Min(afrMAF,
+                Math.Min(amrMAF, sasMAF))));
+            popVariation = high - low;
+            SnpID = SNPDatabase.DbCInt(row["snp_id"]);
+        }
 
         /// <summary>
         /// Calculates the modified peptide string and codex after the query results are returned.
@@ -37,5 +61,5 @@
                 Codex = "";
             }
         }
-   }
+    }
 }

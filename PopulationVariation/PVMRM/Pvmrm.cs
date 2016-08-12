@@ -10,8 +10,7 @@ namespace PVMRM
     {
         private static SNPDatabase database { get; set; }
 
-        static Pvmrm ()
-        {
+        static Pvmrm (){
             database = new SNPDatabase();
         }
 
@@ -35,7 +34,7 @@ namespace PVMRM
                     try
                     {
                         Protein testProtein = protein.Value;
-                        SmartQuery(testProtein);
+                        QueryforSnps(testProtein);
                     }
                     catch (Exception e)
                     {
@@ -61,9 +60,9 @@ namespace PVMRM
         /// Runs a smart query on the protein
         /// </summary>
         /// <param name="lProtein"></param>
-        public static void SmartQuery(Protein lProtein)
+        public static void QueryforSnps(Protein lProtein)
         {
-            database.FindSnpsSmart(lProtein);
+            database.FindSnps(lProtein);
 
             //now we have SNPs get their new sequence and codex
             foreach (Peptide lPep in lProtein.PeptideList)
@@ -109,12 +108,10 @@ namespace PVMRM
             if (proteinInstance.FoundProteinLevelChange)
             {
                 foreach (Snp ps in proteinInstance.ProteinLevelSnps)
-                {
                     sb.Append(proteinInstance.ProteinAccession + "\t" + proteinInstance.ProteinName + "\t" + ps.Codex +
                         "\t" + ps.MinorAlleleFrequency + "\t" + ps.popVariation + "\t" + "N/A" + "\t" + ps.ModifiedPeptideString
                         + "\t" + ps.easMAF + "\t" + ps.eurMAF + "\t" + ps.afrMAF + "\t" + ps.amrMAF + "\t" + ps.sasMAF + "\t"
                         + ps.SnpID + "\n");
-                }
             }
 
             foreach (Peptide pep in proteinInstance.PeptideList)

@@ -29,44 +29,38 @@ namespace PVMRM
         /// data gathered to peptide lengths
         /// </summary>
         /// <param name="protein"></param>
-        public void FindSnpsSmart(Protein protein)
+        public void FindSnps(Protein protein)
         {
-            MissenseQuerySmart(protein.ProteinAccession, protein.PeptideList);
+            //Find SNPs in database related to protein
+            DataTable QueryResults = ProteinQuery(protein.ProteinAccession);
 
-            //now do a call to a new method that looks for variants that affect the whole protein sequence
-            protein.ProteinLevelSnps = ProteinLevelQueryDbSNPLite(protein.ProteinAccession); //does query and attaches to the protein
-            foreach (Snp s in protein.ProteinLevelSnps)
+            //Process and store results in the protein structure, and its substructures
+            foreach (DataRow currentResult in QueryResults.Rows)
             {
-                if (s.ModifiedPeptideString == "41")
-                    s.ModifiedPeptideString = "Stop-Gain";
-                else if (s.ModifiedPeptideString == "43")
-                    s.ModifiedPeptideString = "Stop-Loss";
-                else if (s.ModifiedPeptideString == "44")
-                    s.ModifiedPeptideString = "Frameshift";
-                else if (s.ModifiedPeptideString == "45")
-                    s.ModifiedPeptideString = "CDS-Indel";
-
-                protein.FoundProteinLevelChange = true;
+                string function = DbCStr(currentResult["function"]);
+                if (function == "42" || function == "8")
+                    ProcessMissenseResult(currentResult, protein.PeptideList);
+                else
+                {
+                    ProcessSequenceChangeResult(currentResult, function, protein.ProteinLevelSnps);
+                    protein.FoundProteinLevelChange = true;
+                }
             }
         }
 
         /// <summary>
-        /// Searches for all peptides in a protein at once
+        /// Queries for data on a protein
         /// </summary>
         /// <param name="protAcc"></param>
-        /// <param name="peptideStart"></param>
-        /// <param name="peptideStop"></param>
-        /// <returns></returns>
-        public void MissenseQuerySmart(string protAcc, List<Peptide> plist)
+        /// <returns>Data regarded passsed protein accession</returns>
+        public DataTable ProteinQuery(string protAcc)
         {
-            // Looks up SNP information for the given Accession
+            //Look up SNP information for the given Accession
             StringBuilder sqlStr = new StringBuilder();
-            sqlStr.Append(" SELECT distinct residue, aa_pos, snp_id, freq, eas, eur, afr, amr, sas");
+            sqlStr.Append(" SELECT distinct *");
             sqlStr.Append(" FROM minor01var05");
             sqlStr.Append(" WHERE prot_acc = '" + protAcc + "'");
-            sqlStr.Append(" AND function = 42");
             sqlStr.Append(" ORDER BY aa_pos ");
-
             SQLiteCommand command = new SQLiteCommand(sqlStr.ToString(), conn);
 
             //Get a table to hold the results of the query
@@ -75,109 +69,58 @@ namespace PVMRM
             DataSet Ds = new DataSet();
             Da.Fill(Ds);
             dt = Ds.Tables[0];
-
-            //For each snp found...
-            foreach (DataRow curRow in dt.Rows)
-            {
-                int pos = DbCInt(curRow["aa_pos"]);
-                foreach (Peptide pep in plist)
-                {
-                    //... see if it lies within a peptide in our list...
-                    if (pos > pep.IndexStart && pos < pep.IndexStop)
-                    {
-                        //... then make a Snp object for it...
-                        Snp result = new Snp();
-
-                        result.NewResidue = DbCStr(curRow["residue"]);
-                        result.aa_position = pos;
-                        result.MinorAlleleFrequency = DbCDouble(curRow["freq"]);
-                        result.easMAF = DbCDouble(curRow["eas"]);
-                        result.eurMAF = DbCDouble(curRow["eur"]);
-                        result.afrMAF = DbCDouble(curRow["afr"]);
-                        result.amrMAF = DbCDouble(curRow["amr"]);
-                        result.sasMAF = DbCDouble(curRow["sas"]);
-                        double high = Math.Max(result.easMAF, Math.Max(result.eurMAF, Math.Max(result.afrMAF,
-                            Math.Max(result.amrMAF, result.sasMAF))));
-                        double low = Math.Min(result.easMAF, Math.Min(result.eurMAF, Math.Min(result.afrMAF,
-                            Math.Min(result.amrMAF, result.sasMAF))));
-                        result.popVariation = high - low;
-                        result.SnpID = DbCInt(curRow["snp_id"]);
-
-                        //... and add that object to the Snp List for that peptide
-                        pep.Snps.Add(result);
-                        pep.FoundVariantInQuery = true;
-                    }
-                }
-            }
-
-            dt.Dispose();
+            return dt;
         }
 
         /// <summary>
-        /// ProteinLevel query: query dbSNP database for protein-level variants for a given accession
+        /// Reads information returned from query and stores it in the peptide it corresponds to
         /// </summary>
-        /// <param name="protAcc"></param>
-        /// <returns>List of Snps that populates the Snp list in the Protein class (not the Peptide class for this one).</returns>
-        public List<Snp> ProteinLevelQueryDbSNPLite(string protAcc)
+        /// <param name="curRow"></param>
+        /// <param name="plist"></param>
+        public void ProcessMissenseResult(DataRow curRow, List<Peptide> plist)
         {
-            // Looks up SNP information for the given Accession
-            List<Snp> results = new List<Snp>();
-
-            StringBuilder sqlStr = new StringBuilder();
-            sqlStr.Append(" SELECT distinct residue, aa_pos, snp_id, freq, eas,");
-            sqlStr.Append(" eur, afr, amr, sas, function from minor01var05");
-            sqlStr.Append(" WHERE prot_acc = '" + protAcc + "'");
-            sqlStr.Append(" AND function in (41,43,44,45)");
-            sqlStr.Append(" ORDER BY aa_pos;");
-
-            DataTable dt = null;
-
-            //Get a table to hold the results of the query
-
-            using (SQLiteDataAdapter Da = new SQLiteDataAdapter(sqlStr.ToString(), conn))
+            //Find the SNP's position...
+            int pos = DbCInt(curRow["aa_pos"]);
+            foreach (Peptide pep in plist)
             {
-                using (DataSet Ds = new DataSet())
+                //...see if it lies within a peptide in our list...
+                if (pos > pep.IndexStart && pos < pep.IndexStop)
                 {
-                    Da.Fill(Ds);
-                    dt = Ds.Tables[0];
-                }
-            }
-
-            //Verify at least one row returned
-            if (dt.Rows.Count < 1)
-            {
-                // No data was returned
-                dt.Dispose();
-                return results;
-            }
-            else
-            {
-                foreach (DataRow curRow in dt.Rows)
-                {
+                   //...then make a Snp object for it...
                     Snp result = new Snp();
+                    result.LoadData(curRow);
 
-                    result.NewResidue = DbCStr(curRow["residue"]);
-                    result.aa_position = DbCInt(curRow["aa_pos"]);
-                    result.MinorAlleleFrequency = DbCDouble(curRow["freq"]);
-                    result.easMAF = DbCDouble(curRow["eas"]);
-                    result.eurMAF = DbCDouble(curRow["eur"]);
-                    result.afrMAF = DbCDouble(curRow["afr"]);
-                    result.amrMAF = DbCDouble(curRow["amr"]);
-                    result.sasMAF = DbCDouble(curRow["sas"]);
-                    double high = Math.Max(result.easMAF, Math.Max(result.eurMAF, Math.Max(result.afrMAF, 
-                        Math.Max(result.amrMAF, result.sasMAF))));
-                    double low = Math.Min(result.easMAF, Math.Min(result.eurMAF, Math.Min(result.afrMAF, 
-                        Math.Min(result.amrMAF, result.sasMAF))));
-                    result.popVariation = high - low;
-                    result.SnpID = DbCInt(curRow["snp_id"]);
-                    result.ModifiedPeptideString = DbCInt(curRow["function"]).ToString();
-
-                    if (result.MinorAlleleFrequency != -1)
-                        results.Add(result);
+                    //...and add that object to the Snp List for that peptide
+                    pep.Snps.Add(result);
+                    pep.FoundVariantInQuery = true;
                 }
-                dt.Dispose();
             }
-            return results;
+        }
+
+        /// <summary>
+        /// Reads information returned from query and stores it as a protein level SNP
+        /// </summary>
+        /// <param name="curRow"></param>
+        /// <param name="function"></param>
+        /// <param name="snplist"></param>
+        public void ProcessSequenceChangeResult(DataRow curRow, string function, List<Snp> snplist)
+        {
+            Snp result = new Snp();
+            result.LoadData(curRow);
+
+            if (function == "41")
+                result.ModifiedPeptideString = "Stop-Gain";
+            else if (function == "43")
+                result.ModifiedPeptideString = "Stop-Loss";
+            else if (function == "44")
+                result.ModifiedPeptideString = "Frameshift";
+            else if (function == "45")
+                result.ModifiedPeptideString = "CDS-Indel";
+            else
+                result.ModifiedPeptideString = "Unknown";
+
+            if (result.MinorAlleleFrequency != -1)
+                snplist.Add(result);
         }
 
         /// <summary>
@@ -185,17 +128,13 @@ namespace PVMRM
         /// </summary>
         /// <param name="inpObj"></param>
         /// <returns></returns>
-        public string DbCStr(object inpObj)
+        public static string DbCStr(object inpObj)
         {
             //If input object is DbNull, returns "", otherwise returns String representation of object
             if (ReferenceEquals(inpObj, DBNull.Value))
-            {
                 return string.Empty;
-            }
             else
-            {
                 return Convert.ToString(inpObj);
-            }
         }
 
         /// <summary>
@@ -203,17 +142,13 @@ namespace PVMRM
         /// </summary>
         /// <param name="inpObj"></param>
         /// <returns></returns>
-        public int DbCInt(object inpObj)
+        public static int DbCInt(object inpObj)
         {
             //If input object is DbNull, returns -1, otherwise returns Integer representation of object
             if (ReferenceEquals(inpObj, DBNull.Value))
-            {
                 return -1;
-            }
             else
-            {
                 return Convert.ToInt32(inpObj);
-            }
         }
 
         /// <summary>
@@ -221,17 +156,13 @@ namespace PVMRM
         /// </summary>
         /// <param name="inpObj"></param>
         /// <returns></returns>
-        public double DbCDouble(object inpObj)
+        public static double DbCDouble(object inpObj)
         {
             //If input object is DbNull, returns -1, otherwise returns Double representation of object
             if (ReferenceEquals(inpObj, DBNull.Value))
-            {
                 return -1;
-            }
             else
-            {
                 return Convert.ToDouble(inpObj);
-            }
         }
     }
 }

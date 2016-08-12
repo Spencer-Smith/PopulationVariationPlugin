@@ -24,7 +24,6 @@ namespace PvmrmExecutor
         #endregion
 
         #region Constructor
-
         static PvmrmExecutor()
         {
             Options = new Options();
@@ -34,7 +33,6 @@ namespace PvmrmExecutor
             Options.DatabasePath = Path.GetDirectoryName(System.Reflection.Assembly.GetEntryAssembly().Location) + @"\\DataFiles\SNP.db";
             Options.OutfilePath = Path.GetDirectoryName(System.Reflection.Assembly.GetEntryAssembly().Location) + @"\\temp.txt";
         }
-
         #endregion
 
         [STAThread]
@@ -45,7 +43,7 @@ namespace PvmrmExecutor
             Console.WriteLine(@"Importing Data From Skyline...");
             try
             {
-                Import();
+                Proteins = Import(Options.InputReportPath);
             }
             catch (Exception ex)
             {
@@ -65,9 +63,10 @@ namespace PvmrmExecutor
         /// <summary>
         /// Imports and stores data from Skyline's Input Report
         /// </summary>
-        public static void Import()
+        public static Dictionary<string, Protein> Import(string path)
         {
-            StreamReader input = new StreamReader(Options.InputReportPath);
+            Dictionary<string, Protein> proteins = new Dictionary<string, Protein>();
+            StreamReader input = new StreamReader(path);
             int proteinIndex = 0, peptideIndex = 1, nameIndex = 2, startIndex = 3, endIndex = 4;
 
             //Go through each entry following the header. 
@@ -101,19 +100,20 @@ namespace PvmrmExecutor
                     int.TryParse(entrySplit[endIndex], out endPos);
 
                     //Either add the peptide to an existing protein, or make a new one
-                    if (Proteins.ContainsKey(accession))
-                        Proteins[accession].AddPeptide(peptide, startPos, endPos);
+                    if (proteins.ContainsKey(accession))
+                        proteins[accession].AddPeptide(peptide, startPos, endPos);
                     else
                     {
                         Protein protein = new Protein(accession);
                         protein.ProteinName = entrySplit[nameIndex];
                         protein.AddPeptide(peptide, startPos, endPos);
 
-                        Proteins.Add(accession, protein);
+                        proteins.Add(accession, protein);
                     }
                 }
             }
             input.Close();
+            return proteins;
         }
 
         /// <summary>
@@ -125,7 +125,7 @@ namespace PvmrmExecutor
         {
             string result = "";
 
-            //If we've already seen this Id, don't bother querying, just return what we already know
+            //If we've already seen the ID, don't bother querying, just return what we already know
             if (KnownConversions.ContainsKey(sharedId))
             {
                 result = KnownConversions[sharedId];

@@ -13,7 +13,7 @@ namespace PVMRM
 
         public Peptide(string peptide)
         {
-            this.PeptideString = peptide;
+            PeptideString = peptide;
             Snps = new List<Snp>();
         }
     }

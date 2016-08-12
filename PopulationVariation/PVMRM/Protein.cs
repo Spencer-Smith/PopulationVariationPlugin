@@ -27,23 +27,16 @@ namespace PVMRM
         public void AddPeptide(string peptideString, int startPos, int endPos)
         {
             Peptide peptideInstance = new Peptide(peptideString); //new and not fully-formed peptide
-
-            /*  The above method was required before Skyline would export the beginning and ending positions, but
-                    now that it does, we can take advantage of that.    */
-
             peptideInstance.IndexStart = startPos;
             peptideInstance.IndexStop = endPos;
-
             PeptideList.Add(peptideInstance);
-
         }
 
         /// <summary>
         /// Stores a peptide object
         /// </summary>
         /// <param name="pep"></param>
-        public void DirectAddPeptide(Peptide pep)
-        {
+        public void DirectAddPeptide(Peptide pep){
             PeptideList.Add(pep);
         }
     }
